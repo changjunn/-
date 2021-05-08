@@ -1,0 +1,139 @@
+'''
+시작 시각 : 20210508 12:06
+종료 시각 : 20210508 03:46
+'''
+
+from collections import Counter
+
+class Cake:
+    def __init__(self, name, price, ingredient):
+        self.name = name
+        self.price = price
+        self.ingredient = ingredient
+        pass
+
+
+class Shop:
+    def __init__(self):
+        Shop.ingredient = {}
+        Shop.product = {}
+        pass
+
+    def buy_ingredient(self, buy_dict):
+        if Shop.ingredient == {}:
+            Shop.ingredient = buy_dict
+        else:
+            Shop.ingredient = dict(Counter(Shop.ingredient) + Counter(buy_dict))
+        pass
+
+    def current_ingredient(self):
+        print("현재 보유한 재료는", end = " ")
+        i = 0
+        for x in Shop.ingredient.keys():
+            i += 1
+            print(f"{x}({Shop.ingredient[x]}개)", end = "")
+            if i < len(Shop.ingredient):
+                print(",", end = " ")
+        print("입니다.")
+        pass
+
+    def make_cake(self, cake):
+        for x in cake.ingredient.keys():
+            if x not in Shop.ingredient:
+                print(f"{x} 재료가 {cake.ingredient[x]}개 부족합니다.")
+                break
+            elif (x in Shop.ingredient) & (cake.ingredient[x] > Shop.ingredient[x]):
+                print(f"{x} 재료가 {cake.ingredient[x] - Shop.ingredient[x]}개,", end = " ")
+            else:
+                Shop.ingredient = dict(Counter(Shop.ingredient) - Counter(cake.ingredient))
+                print(f"{cake.name} 1개 완성!")
+                Shop.product = dict(Counter(Shop.product) + Counter({cake.name : 1}))
+                break
+        pass
+
+
+class Pos:
+    def __init__(self, cake_shop):
+        self.cake_shop = cake_shop
+        Pos.money = 0
+        pass
+
+    def current_cakes(self):
+        print(f"현재 재고는")
+        for x in cake_shop.product:
+            print(f"{x}: {cake_shop.product[x]}")
+        pass
+
+    def sell_cake(self, cakename):
+        if cakename not in cake_shop.product:
+            print(f"{cakename} 재고가 없습니다.")
+        else:
+            print(f"{cakename} 판매 완료. 현재 남은 {cakename}의 개수는 {cake_shop.product[cakename] - 1}개 입니다.")
+            if cakename == "Cheese Cake":
+                Pos.money += 6900
+            elif cakename == "Chocolate Cake":
+                Pos.money += 5900
+            elif cakename == "Carrot Cake":
+                Pos.money += 5500
+            elif cakename == "Fresh Cream Cake":
+                Pos.money += 4500
+            elif cakename == "Sweet Potato Cake":
+                Pos.money += 6500
+            cake_shop.product = dict(Counter(cake_shop.product) - Counter({cakename: 1}))
+        pass
+
+    def print_current_money(self):
+        print(f"현재 판매 금액은 총 {Pos.money}원 입니다.")
+        pass
+
+
+cheesecake = Cake("Cheese Cake", 6900, {'cheese': 2, 'egg': 2, 'butter': 2})
+chococake = Cake("Chocolate Cake", 5900, {'chocolate': 2, 'egg': 2, 'butter': 2})
+carrotcake = Cake("Carrot Cake", 5500, {'carrot': 2, 'walnut': 2, 'egg': 1, 'butter': 1})
+creamcake = Cake("Fresh Cream Cake", 4500, {'cream': 3, 'egg': 1, 'butter': 1})
+swpotatocake = Cake("Sweet Potato Cake", 6500, {'sweet potato': 3, 'egg': 2, 'butter': 1})
+
+cake_shop = Shop()
+cake_shop.buy_ingredient({'cheese': 5, 'carrot': 3, 'sweet potato': 3, 'egg': 10, 'butter': 10})
+cake_shop.current_ingredient()
+cake_shop.buy_ingredient({'chocolate': 3, 'walnut': 2, 'egg': 12, 'butter': 12})
+cake_shop.current_ingredient()
+
+print("\nMAKE CAKE")
+cake_shop.make_cake(creamcake)
+print(cake_shop.ingredient)
+cake_shop.make_cake(carrotcake)
+print(cake_shop.ingredient)
+cake_shop.make_cake(carrotcake)
+print(cake_shop.ingredient)
+cake_shop.make_cake(cheesecake)
+print(cake_shop.ingredient)
+cake_shop.make_cake(cheesecake)
+print(cake_shop.ingredient)
+cake_shop.make_cake(chococake)
+print(cake_shop.ingredient)
+cake_shop.make_cake(swpotatocake)
+print(cake_shop.ingredient)
+cake_shop.current_ingredient()
+
+pos = Pos(cake_shop)
+print()
+pos.current_cakes()
+
+print()
+pos.sell_cake('Cheese Cake')
+pos.current_cakes()
+
+print()
+pos.sell_cake('Cheese Cake')
+pos.current_cakes()
+
+print()
+pos.sell_cake('Chocolate Cake')
+pos.current_cakes()
+
+print()
+pos.sell_cake('Cheese Cake')
+
+print()
+pos.print_current_money()
